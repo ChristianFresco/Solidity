@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Web 3 Demo</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <script src='/node_modules/web3/dist/web3.min.js'></script>
+    
+</head>
+
+<body>
+
+    Web 3 Demo
+    
+        <br><br>
+        <input type="text" id="SerialNumber" value="Insert Serial Number"><br><br>
+        <input type="hidden" id="PreText" value="Questo prodotto con serial Number: ">
+        <input type="hidden" id="PostText" value=" è stato registrato da CustomGuitar con codice BlockChain">
+        <input type="hidden" id="LinkText" value=" https://www.christianfresco.com">
+        <button  type="submit" id="btn1" onclick="changeCoolNumber();">Registra Messaggio </button>      
+    <br >
+
+    <br /><br />
+    Status: <span id="status">Loading...</span>
+
+
+    <script type="text/javascript">
+        async function loadWeb3() {
+            if (window.ethereum) {
+                window.web3 = new Web3(window.ethereum);
+                //await window.ethereum.enable();
+            }
+        }
+
+        async function loadContract() {
+            
+            return await new window.web3.eth.Contract([
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ReadBlockChain",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "MessageFromBlockChain",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "_MessageFromBlockChain",
+                        "type": "string"
+                    }
+                ],
+                "name": "setCoolNumber",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ], '0x4a3b75D7da42D3b8A118AD758E7d5754A50BAfBd');
+        }
+
+        
+        async function getCurrentAccount() {
+            const accounts = await window.web3.eth.getAccounts();
+            return accounts[0];r
+        }
+
+        async function changeCoolNumber() {
+            const value = document.getElementById("PreText").value + document.getElementById("SerialNumber").value + document.getElementById("PostText").value + document.getElementById("LinkText").value;
+            updateStatus(`Updating BlockChain please Wait...`);
+            const account = await getCurrentAccount();
+            const coolNumber = await window.contract.methods.setCoolNumber(value).send({ from: account });
+            updateStatus('Updated.');
+        }
+
+        async function load() {
+            
+
+
+            await loadWeb3();
+            window.contract = await loadContract();
+            updateStatus('Ready!');
+        }
+
+        function updateStatus(status) {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = status;
+            console.log(status);
+        }
+
+
+
+        load();
+
+
+    </script>
+</body>
+
+</html>
